@@ -1,5 +1,5 @@
 # 光流估计项目
-本项目使用深度学习技术实现光流估计，基于 Flying Chairs 数据集训练。
+本项目使用深度学习技术实现光流估计，基于 Flying Chairs (https://lmb.informatik.uni-freiburg.de/resources/datasets/FlyingChairs.en.html#flyingchairs)数据集训练。
 
 ## 功能
 - 数据加载与预处理
