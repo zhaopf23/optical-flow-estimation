@@ -9,6 +9,6 @@
 
 ## 安装
 ```bash
-git clone https://github.com/yourusername/your-repo.git
-cd your-repo
+git clone https://github.com/yourusername/optical-flow-estimation.git
+cd optical-flow-estimation
 pip install -r requirements.txt
