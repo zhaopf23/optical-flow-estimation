@@ -12,3 +12,12 @@
 git clone https://github.com/zhaopf23/optical-flow-estimation.git
 cd optical-flow-estimation
 pip install -r requirements.txt
+
+## 项目结构
+flow-project/
+├── src/ - 源代码目录
+│ └── third.py - 主训练脚本
+├── FlyingChairs_release/ - 数据集目录（需自行下载）
+├── .gitignore - Git忽略规则
+├── requirements.txt - Python依赖
+└── README.md - 项目文档
