@@ -16,7 +16,7 @@ pip install -r requirements.txt
 ## 项目结构
 flow-project/
 ├── src/ - 源代码目录
-│ └── third.py - 主训练脚本
+│ └── train.py - 主训练脚本
 ├── FlyingChairs_release/ - 数据集目录（需自行下载）
 ├── .gitignore - Git忽略规则
 ├── requirements.txt - Python依赖
