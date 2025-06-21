@@ -25,12 +25,10 @@ class FlowTransform:
         self.augment = augment
         
     def __call__(self, img1, img2, flow):
-        # 转换为Tensor
+
         img1 = transforms.functional.to_tensor(img1)
         img2 = transforms.functional.to_tensor(img2)
         flow = torch.from_numpy(flow).float()
-        
-        # 归一化图像
         img1 = transforms.functional.normalize(img1, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         img2 = transforms.functional.normalize(img2, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
         
@@ -77,8 +75,6 @@ class FlyingChairsDataset(Dataset):
         # 打印路径信息以便调试
         print(f"Data directory: {os.path.abspath(data_dir)}")
         print(f"Split file: {os.path.abspath(split_file)}")
-        
-        # 检查路径是否存在
         if not os.path.exists(data_dir):
             raise FileNotFoundError(f"Data directory not found: {data_dir}")
         if not os.path.exists(split_file):
@@ -91,17 +87,14 @@ class FlyingChairsDataset(Dataset):
             
             valid_samples = 0
             for idx, line in enumerate(lines):
-                # 清理行内容
                 line = line.strip()
-                if not line:  # 跳过空行
+                if not line: 
                     continue
                 
                 # 1表示训练集，2表示验证集
                 if (split == 'train' and line == '1') or (split == 'val' and line == '2'):
-                    # 样本ID从1开始，对应文件命名
                     sample_id = idx + 1
                     
-                    # 检查文件是否存在
                     img1_path = os.path.join(data_dir, f'{sample_id:05d}_img1.ppm')
                     img2_path = os.path.join(data_dir, f'{sample_id:05d}_img2.ppm')
                     flow_path = os.path.join(data_dir, f'{sample_id:05d}_flow.flo')
@@ -141,19 +134,15 @@ class FlyingChairsDataset(Dataset):
         if img2 is None:
             raise FileNotFoundError(f"Image2 not found or corrupted: {img2_path}")
         
-        # 读取光流文件
         flow = self.read_flo(flow_path)
         
-        # 应用变换
         if self.transform:
             return self.transform(img1, img2, flow)
         else:
-            # 转换为Tensor
             img1 = transforms.functional.to_tensor(img1)
             img2 = transforms.functional.to_tensor(img2)
             flow = torch.from_numpy(flow).float()
             
-            # 归一化图像
             img1 = transforms.functional.normalize(img1, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             img2 = transforms.functional.normalize(img2, (0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
             
@@ -178,21 +167,15 @@ class FlyingChairsDataset(Dataset):
 class FlowNet(nn.Module):
     def __init__(self):
         super(FlowNet, self).__init__()
-        
-        # 特征提取器（共享权重）
         self.conv1 = self._make_conv_block(3, 64)
         self.conv2 = self._make_conv_block(64, 128, stride=2)
         self.conv3 = self._make_conv_block(128, 256, stride=2)
         self.conv3_1 = self._make_conv_block(256, 256)
         self.conv4 = self._make_conv_block(256, 512, stride=2)
         self.conv4_1 = self._make_conv_block(512, 512)
-        
-        # 光流预测器 - 修正通道数
-        self.deconv3 = self._make_deconv_block(1024, 256)  # 512*2 = 1024
-        self.deconv2 = self._make_deconv_block(768, 128)    # 修正为768 (256*3)
-        self.deconv1 = self._make_deconv_block(384, 64)     # 修正为384 (128*3)
-        
-        # 最终预测层 - 修正输入通道数
+        self.deconv3 = self._make_deconv_block(1024, 256) 
+        self.deconv2 = self._make_deconv_block(768, 128)   
+        self.deconv1 = self._make_deconv_block(384, 64)    
         self.predict_flow = nn.Conv2d(192, 2, kernel_size=3, padding=1)  # 修正为192 (64*3)
         
     def _make_conv_block(self, in_channels, out_channels, stride=1):
@@ -350,8 +333,6 @@ def visualize_flow(flow):
     hsv[..., 0] = ang * 180 / np.pi / 2
     hsv[..., 1] = 255
     hsv[..., 2] = cv2.normalize(mag, None, 0, 255, cv2.NORM_MINMAX)
-    
-    # 转换为RGB
     rgb = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
     return rgb
 
@@ -360,10 +341,7 @@ def plot_loss_history(train_losses, val_losses, lr_history, output_dir="loss_plo
     """绘制训练和验证损失曲线"""
     os.makedirs(output_dir, exist_ok=True)
     
-    # 创建图表
     plt.figure(figsize=(15, 10))
-    
-    # 训练损失
     plt.subplot(2, 1, 1)
     plt.plot(train_losses, label='Train Loss')
     plt.plot(val_losses, label='Validation Loss', color='orange')
